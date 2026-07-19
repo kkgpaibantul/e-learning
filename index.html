@@ -2,25 +2,62 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f2620">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>E-Learning PAI SD - KKG Bantul</title>
-    <!-- Font modern -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='6' y='6' width='36' height='36' fill='none' stroke='%230e9b6c' stroke-width='3.5'/><rect x='6' y='6' width='36' height='36' fill='none' stroke='%230e9b6c' stroke-width='3.5' transform='rotate(45 24 24)'/><circle cx='24' cy='24' r='4.5' fill='%230e9b6c'/></svg>">
+
+    <!-- Fonts: Fraunces (identitas/heading berkarakter) + Plus Jakarta Sans (UI & body, jernih di layar kecil) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* === VARIABLES & CONFIGURATION === */
+        /* === DESIGN TOKENS === */
         :root {
-            --sidebar-width: 280px;
-            --bg-sidebar: #111827; 
-            --bg-sidebar-hover: #1f2937;
-            --bg-panel: #0b0f19;
-            --bg-body: #f3f4f6;
+            --sidebar-width: min(280px, 85vw);
+
+            /* Ink (sidebar) — deep teal-black, bukan hitam polos */
+            --ink: #0f2620;
+            --ink-soft: #17352c;
+            --ink-line: #24463a;
+
+            /* Paper (kanvas utama) — netral hangat-sejuk, bukan cream */
+            --bg-body: #eef1ee;
             --bg-card: #ffffff;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --text-dark: #1f2937;
-            --accent: #10b981; 
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Aksen */
+            --emerald: #0e9b6c;
+            --emerald-deep: #0b7d57;
+            --gold: #c9a15a;
+            --gold-soft: rgba(201, 161, 90, 0.35);
+
+            --text-main: #eef3f0;
+            --text-muted-onink: #93a8a0;
+            --text-dark: #16251f;
+            --text-muted: #64766e;
+
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-soft: 0 10px 30px rgba(15, 38, 32, 0.08);
+
+            --transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :root { --transition-smooth: none; }
+            * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
         }
 
         /* === GLOBAL RESET === */
@@ -28,53 +65,88 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: var(--font-body);
             -webkit-tap-highlight-color: transparent;
         }
+
+        html, body { height: 100%; }
 
         body {
             display: flex;
             height: 100vh;
+            height: 100dvh;
             background-color: var(--bg-body);
             overflow: hidden;
             position: relative;
+            color: var(--text-dark);
         }
+
+        button { font: inherit; }
+
+        :focus-visible {
+            outline: 2px solid var(--emerald);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* === LOGO MARK (placeholder — ganti dengan <img src="logo-kkg.png"> jika sudah punya file logo resmi) === */
+        .logo-mark {
+            flex-shrink: 0;
+            display: block;
+        }
+        .logo-mark--mini { width: 26px; height: 26px; }
+        .logo-mark--main { width: 40px; height: 40px; }
 
         /* === SIDEBAR STYLING === */
         .sidebar {
             width: var(--sidebar-width);
-            background-color: var(--bg-sidebar);
+            background-color: var(--ink);
+            background-image:
+                radial-gradient(circle at 100% 0%, rgba(201, 161, 90, 0.08), transparent 45%),
+                radial-gradient(circle at 0% 100%, rgba(14, 155, 108, 0.12), transparent 50%);
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-soft);
             z-index: 100;
             transition: var(--transition-smooth);
+            padding-top: var(--safe-top);
+            padding-left: var(--safe-left);
         }
 
         .sidebar-header {
             padding: 24px;
-            border-bottom: 1px solid #374151;
+            border-bottom: 1px solid var(--ink-line);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .sidebar-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
+        .sidebar-header-text h2 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 600;
             color: #ffffff;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.2px;
+            line-height: 1.25;
         }
 
-        .sidebar-header p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 4px;
+        .sidebar-header-text p {
+            font-size: 0.78rem;
+            color: var(--gold);
+            margin-top: 3px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
         }
 
         .sidebar-menu {
             flex: 1;
             overflow-y: auto;
-            padding: 16px 0;
+            padding: 14px 0 24px;
         }
+
+        .sidebar-menu::-webkit-scrollbar { width: 6px; }
+        .sidebar-menu::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 3px; }
 
         /* Accordion Trigger */
         .accordion-btn {
@@ -85,8 +157,9 @@
             width: 100%;
             text-align: left;
             border: none;
+            border-left: 3px solid transparent;
             outline: none;
-            font-size: 0.95rem;
+            font-size: 0.93rem;
             font-weight: 600;
             transition: var(--transition-smooth);
             display: flex;
@@ -95,53 +168,90 @@
         }
 
         .accordion-btn:hover, .accordion-btn.active {
-            background-color: var(--bg-sidebar-hover);
-            border-left: 4px solid var(--accent);
-            padding-left: 20px;
+            background-color: var(--ink-soft);
+            border-left-color: var(--emerald);
+            padding-left: 21px;
         }
 
+        .accordion-btn.active { color: #ffffff; }
+
         .accordion-btn::after {
-            content: '\276F'; 
-            font-size: 0.75rem;
+            content: '\276F';
+            font-size: 0.7rem;
+            color: var(--text-muted-onink);
             transition: var(--transition-smooth);
         }
-        
+
         .accordion-btn.active::after {
             transform: rotate(90deg);
+            color: var(--emerald);
         }
 
         /* Sub-menu Panel */
         .panel {
-            background-color: var(--bg-panel);
+            background-color: rgba(0,0,0,0.15);
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
 
-        .panel ul {
-            list-style: none;
-            padding: 6px 0;
-        }
+        .panel ul { list-style: none; padding: 6px 0; }
 
         .panel li {
             padding: 10px 24px 10px 40px;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--text-muted-onink);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            line-height: 1.4;
+        }
+
+        .panel li:hover { color: #ffffff; background-color: rgba(255,255,255,0.04); }
+
+        .panel li.active-slide {
+            color: var(--emerald);
+            font-weight: 700;
+            background-color: rgba(14, 155, 108, 0.08);
+            border-right: 3px solid var(--emerald);
+        }
+
+        /* Skeleton loader (saat data-materi.json sedang dimuat) */
+        .skeleton-item {
+            height: 18px;
+            margin: 14px 24px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--ink-soft) 25%, var(--ink-line) 50%, var(--ink-soft) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s ease-in-out infinite;
+        }
+        .skeleton-item:nth-child(2) { width: 70%; }
+        .skeleton-item:nth-child(3) { width: 85%; }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        #status-pesan {
+            padding: 20px 24px;
+            text-align: center;
+            color: var(--text-muted-onink);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .btn-retry {
+            margin-top: 12px;
+            background: var(--emerald);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
             cursor: pointer;
             transition: var(--transition-smooth);
         }
-
-        .panel li:hover {
-            color: #ffffff;
-            background-color: rgba(255,255,255,0.03);
-        }
-
-        .panel li.active-slide {
-            color: var(--accent);
-            font-weight: 700;
-            background-color: rgba(16, 185, 129, 0.05);
-            border-right: 3px solid var(--accent);
-        }
+        .btn-retry:hover { background: var(--emerald-deep); }
 
         /* === MAIN WORKSPACE === */
         .main-content {
@@ -152,6 +262,8 @@
             height: 100%;
             position: relative;
             overflow: hidden;
+            padding-top: calc(24px + var(--safe-top));
+            padding-right: calc(24px + var(--safe-right));
         }
 
         /* Top Bar khusus Mobile */
@@ -167,19 +279,27 @@
             border: none;
             width: 42px;
             height: 42px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-soft);
             color: var(--text-dark);
+            flex-shrink: 0;
         }
+        .btn-toggle-menu:active { transform: scale(0.94); }
+
+        .mobile-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
 
         .mobile-title h1 {
+            font-family: var(--font-display);
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Stage Container */
@@ -189,12 +309,11 @@
             width: 100%;
             height: 100%;
             background-color: var(--bg-card);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
             overflow: hidden;
         }
 
-        /* Solusi agar iframe tidak merusak tatanan tombol absolut */
         .viewer-container iframe {
             position: absolute;
             top: 0;
@@ -202,85 +321,92 @@
             width: 100%;
             height: 100%;
             border: none;
-            background-color: #f9fafb;
+            background-color: var(--bg-card);
             z-index: 1;
         }
-        
+
         .placeholder-text {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #9ca3af;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
             text-align: center;
             z-index: 2;
+            padding: 24px;
+            /* motif geometris halus sebagai signature, sangat samar */
+            background-image: radial-gradient(circle at 50% 50%, transparent 0%, var(--bg-card) 70%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%230e9b6c' stroke-width='1' opacity='0.06'%3E%3Crect x='20' y='20' width='60' height='60'/%3E%3Crect x='20' y='20' width='60' height='60' transform='rotate(45 50 50)'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
         }
 
-        #status-pesan {
-            padding: 20px;
-            text-align: center;
-            color: var(--text-muted);
+        .placeholder-text h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 4px;
         }
 
-        /* Floating Action Buttons */
+        .placeholder-text p { font-size: 0.85rem; margin-top: 6px; color: var(--text-muted); }
+
+        /* Floating Action Button */
         .btn-fullscreen {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: calc(20px + var(--safe-bottom));
+            right: calc(20px + var(--safe-right));
             width: 52px;
             height: 52px;
-            background-color: var(--accent);
+            background-color: var(--emerald);
             color: white;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-            display: none; 
+            box-shadow: 0 6px 20px rgba(14, 155, 108, 0.4);
+            display: none;
             justify-content: center;
             align-items: center;
-            z-index: 999; /* Dipastikan selalu berada di atas iframe */
+            z-index: 999;
             transition: var(--transition-smooth);
         }
 
-        .btn-fullscreen:hover {
-            transform: scale(1.08);
-        }
+        .btn-fullscreen:hover { transform: scale(1.08); background-color: var(--emerald-deep); }
+        .btn-fullscreen:active { transform: scale(0.96); }
 
         /* Mobile Backdrop Overlay */
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.4);
+            inset: 0;
+            background: rgba(15, 38, 32, 0.45);
             backdrop-filter: blur(4px);
             z-index: 99;
         }
 
         /* === NATIVE & PSEUDO FULLSCREEN OVERRIDES === */
-        .viewer-container:fullscreen {
-            border-radius: 0;
-        }
-        
-        /* Solusi penyelamat untuk browser iOS / HP yang menolak native fullscreen */
+        .viewer-container:fullscreen { border-radius: 0; }
+
         .viewer-container.is-pseudo-fs {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
+            height: 100dvh !important;
             z-index: 99999 !important;
             border-radius: 0 !important;
             background-color: #000000 !important;
         }
+        .viewer-container.is-pseudo-fs .btn-fullscreen {
+            bottom: calc(20px + var(--safe-bottom));
+            right: calc(20px + var(--safe-right));
+        }
 
-        /* === RESPONSIVE MEDIA QUERIES (TABLET & MOBILE) === */
+        /* === RESPONSIVE: TABLET & MOBILE (<=992px) === */
         @media (max-width: 992px) {
-            .mobile-header {
-                display: flex;
-            }
+            .mobile-header { display: flex; }
 
             .sidebar {
                 position: fixed;
@@ -288,20 +414,38 @@
                 top: 0;
                 bottom: 0;
                 height: 100vh;
+                height: 100dvh;
             }
 
-            body.sidebar-open .sidebar {
-                left: 0;
-            }
-
-            body.sidebar-open .sidebar-overlay {
-                display: block;
-            }
+            body.sidebar-open .sidebar { left: 0; }
+            body.sidebar-open .sidebar-overlay { display: block; }
 
             .main-content {
                 padding: 16px;
+                padding-top: calc(16px + var(--safe-top));
+                padding-right: calc(16px + var(--safe-right));
+                padding-left: calc(16px + var(--safe-left));
+                padding-bottom: calc(16px + var(--safe-bottom));
                 height: 100vh;
+                height: 100dvh;
             }
+        }
+
+        /* === SMALL PHONES === */
+        @media (max-width: 380px) {
+            .sidebar-header { padding: 18px; }
+            .accordion-btn { padding: 12px 18px; font-size: 0.88rem; }
+            .panel li { padding: 9px 18px 9px 32px; font-size: 0.82rem; }
+            .btn-fullscreen { width: 46px; height: 46px; }
+        }
+
+        /* === SHORT / LANDSCAPE VIEWPORTS (HP diputar untuk presentasi) === */
+        @media (max-height: 480px) and (orientation: landscape) {
+            .main-content { padding: 10px; padding-top: calc(10px + var(--safe-top)); }
+            .mobile-header { padding-bottom: 8px; }
+            .btn-toggle-menu { width: 36px; height: 36px; }
+            .mobile-title h1 { font-size: 0.85rem; }
+            .btn-fullscreen { width: 44px; height: 44px; bottom: calc(12px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
         }
     </style>
 </head>
@@ -313,40 +457,57 @@
     <!-- SIDEBAR NAVIGATION -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>KKG PAI Kab. Bantul</h2>
-            <p>CP 020 • Tahun 2026</p>
+            <!-- LOGO: placeholder motif geometris. Jika sudah ada file logo resmi (mis. logo-kkg.png),
+                 ganti tag <svg class="logo-mark logo-mark--main">...</svg> di bawah ini dengan:
+                 <img class="logo-mark logo-mark--main" src="logo-kkg.png" alt="Logo KKG PAI Kab. Bantul"> -->
+            <svg class="logo-mark logo-mark--main" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="7" y="7" width="34" height="34" stroke="var(--gold)" stroke-width="2.5"/>
+                <rect x="7" y="7" width="34" height="34" stroke="var(--gold)" stroke-width="2.5" transform="rotate(45 24 24)"/>
+                <circle cx="24" cy="24" r="4" fill="var(--emerald)"/>
+            </svg>
+            <div class="sidebar-header-text">
+                <h2>KKG PAI Kab. Bantul</h2>
+                <p>CP 020 &bull; Tahun 2026</p>
+            </div>
         </div>
         <div class="sidebar-menu" id="tempat-menu-sidebar">
-            <div id="status-pesan">Memuat daftar materi...</div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
         </div>
     </aside>
 
     <!-- MAIN INTERFACE -->
     <main class="main-content">
-        
+
         <!-- HEADER MOBILE -->
         <header class="mobile-header">
-            <button class="btn-toggle-menu" onclick="toggleMobileSidebar(true)" title="Buka Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <button class="btn-toggle-menu" onclick="toggleMobileSidebar(true)" title="Buka Menu" aria-label="Buka menu materi">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <div class="mobile-title">
+                <svg class="logo-mark logo-mark--mini" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="7" y="7" width="34" height="34" stroke="#c9a15a" stroke-width="3"/>
+                    <rect x="7" y="7" width="34" height="34" stroke="#c9a15a" stroke-width="3" transform="rotate(45 24 24)"/>
+                    <circle cx="24" cy="24" r="4.5" fill="#0e9b6c"/>
+                </svg>
                 <h1>E-Learning PAI</h1>
             </div>
         </header>
 
         <!-- VIEWER SCREEN -->
         <div class="viewer-container" id="viewer-container">
-            
+
             <div class="placeholder-text" id="placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 <h3>Pilih materi di menu samping</h3>
-                <p style="font-size: 0.85rem; margin-top: 4px;">Presentasi interaktif siap dimulai</p>
+                <p>Presentasi interaktif siap dimulai</p>
             </div>
-            
-            <iframe id="slide-viewer" src="" allowfullscreen></iframe>
+
+            <iframe id="slide-viewer" src="" allowfullscreen title="Slide materi PAI"></iframe>
 
             <!-- Floating Fullscreen Button -->
-            <button id="btn-fullscreen" class="btn-fullscreen" title="Layar Penuh" onclick="toggleFullscreen()">
+            <button id="btn-fullscreen" class="btn-fullscreen" title="Layar Penuh" aria-label="Tampilkan layar penuh" onclick="toggleFullscreen()">
                 <svg id="fs-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
                 </svg>
@@ -366,18 +527,23 @@
         };
 
         async function initApp() {
+            DOM.menuContainer.innerHTML = `
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+            `;
             try {
                 const response = await fetch('data-materi.json');
                 if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                
+
                 const data = await response.json();
-                DOM.menuContainer.innerHTML = ''; 
+                DOM.menuContainer.innerHTML = '';
 
                 data.forEach(itemKelas => {
                     const btn = document.createElement('button');
                     btn.className = 'accordion-btn';
                     btn.textContent = itemKelas.kelas;
-                    
+
                     const panel = document.createElement('div');
                     panel.className = 'panel';
                     const ul = document.createElement('ul');
@@ -385,11 +551,11 @@
                     itemKelas.bab.forEach(itemBab => {
                         const li = document.createElement('li');
                         li.textContent = itemBab.judul;
-                        
+
                         li.onclick = function() {
                             executeLoadSlide(itemBab.file, this);
-                        }; 
-                        
+                        };
+
                         ul.appendChild(li);
                     });
 
@@ -402,7 +568,8 @@
 
             } catch (error) {
                 console.error("Initialization failed:", error);
-                DOM.menuContainer.innerHTML = `<div id="status-pesan">Gagal memuat materi.<br>Periksa kembali file data-materi.json.</div>`;
+                DOM.menuContainer.innerHTML = `<div id="status-pesan">Gagal memuat materi.<br>Periksa kembali file data-materi.json.
+                    <br><button class="btn-retry" onclick="initApp()">Coba Lagi</button></div>`;
             }
         }
 
@@ -428,7 +595,7 @@
             DOM.placeholder.style.display = 'none';
             DOM.viewer.src = url;
             DOM.fsBtn.style.display = 'flex';
-            
+
             document.querySelectorAll('.panel li').forEach(li => li.classList.remove('active-slide'));
             element.classList.add('active-slide');
 
@@ -450,19 +617,16 @@
             const isPseudoFs = container.classList.contains('is-pseudo-fs');
 
             if (!isNativeFs && !isPseudoFs) {
-                // Jalur 1: Coba sistem Fullscreen asli browser
                 if (container.requestFullscreen) {
                     try {
                         await container.requestFullscreen();
-                        return; 
+                        return;
                     } catch (err) {
                         console.warn("Native Fullscreen ditolak, beralih ke Pseudo Mode.");
                     }
                 }
-                // Jalur 2: Sistem cadangan jika Jalur 1 gagal/tidak didukung (seperti iOS Safari)
                 enterPseudoFullscreen();
             } else {
-                // Proses keluar layar penuh
                 if (isNativeFs) {
                     if (document.exitFullscreen) document.exitFullscreen();
                 } else {
@@ -481,12 +645,9 @@
             handleFullscreenEffects(false);
         }
 
-        // Pengendali efek rotasi & perubahan icon tombol
         async function handleFullscreenEffects(active) {
             if (active) {
                 DOM.fsIcon.innerHTML = `<path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>`;
-                
-                // OTOMATIS LANDSCAPE (Khusus Android & Chrome Mobile)
                 if (screen.orientation && screen.orientation.lock) {
                     try {
                         await screen.orientation.lock('landscape');
@@ -496,14 +657,12 @@
                 }
             } else {
                 DOM.fsIcon.innerHTML = `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>`;
-                
                 if (screen.orientation && screen.orientation.unlock) {
                     screen.orientation.unlock();
                 }
             }
         }
 
-        // Sinkronisasi dengan event tombol bawaan browser (ESC key)
         document.addEventListener('fullscreenchange', () => handleFullscreenEffects(!!document.fullscreenElement));
         document.addEventListener('webkitfullscreenchange', () => handleFullscreenEffects(!!document.fullscreenElement));
 
