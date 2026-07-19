@@ -9,10 +9,8 @@
     
     <style>
         /* === VARIABLES & CONFIGURATION === */
-        :var-styling {
-            --sidebar-width: 280px;
-        }
         :root {
+            --sidebar-width: 280px;
             --bg-sidebar: #111827; 
             --bg-sidebar-hover: #1f2937;
             --bg-panel: #0b0f19;
@@ -21,7 +19,7 @@
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --text-dark: #1f2937;
-            --accent: #10b981; /* Hijau Islami Modern */
+            --accent: #10b981; 
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -153,7 +151,7 @@
             padding: 24px;
             height: 100%;
             position: relative;
-            transition: var(--transition-smooth);
+            overflow: hidden;
         }
 
         /* Top Bar khusus Mobile */
@@ -186,19 +184,26 @@
 
         /* Stage Container */
         .viewer-container {
+            position: relative;
             flex: 1;
+            width: 100%;
+            height: 100%;
             background-color: var(--bg-card);
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             overflow: hidden;
-            position: relative;
         }
 
+        /* Solusi agar iframe tidak merusak tatanan tombol absolut */
         .viewer-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
             background-color: #f9fafb;
+            z-index: 1;
         }
         
         .placeholder-text {
@@ -208,7 +213,7 @@
             transform: translate(-50%, -50%);
             color: #9ca3af;
             text-align: center;
-            z-index: 1;
+            z-index: 2;
         }
 
         #status-pesan {
@@ -220,26 +225,25 @@
         /* Floating Action Buttons */
         .btn-fullscreen {
             position: absolute;
-            bottom: 24px;
-            right: 24px;
-            width: 50px;
-            height: 50px;
+            bottom: 20px;
+            right: 20px;
+            width: 52px;
+            height: 52px;
             background-color: var(--accent);
             color: white;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
             display: none; 
             justify-content: center;
             align-items: center;
-            z-index: 90;
+            z-index: 999; /* Dipastikan selalu berada di atas iframe */
             transition: var(--transition-smooth);
         }
 
         .btn-fullscreen:hover {
             transform: scale(1.08);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
 
         /* Mobile Backdrop Overlay */
@@ -255,15 +259,21 @@
             z-index: 99;
         }
 
-        /* === FULLSCREEN OVERRIDES === */
+        /* === NATIVE & PSEUDO FULLSCREEN OVERRIDES === */
         .viewer-container:fullscreen {
             border-radius: 0;
         }
-        .viewer-container:fullscreen .btn-fullscreen {
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(31, 41, 55, 0.7); /* Lebih transparan saat fullscreen */
-            backdrop-filter: blur(4px);
+        
+        /* Solusi penyelamat untuk browser iOS / HP yang menolak native fullscreen */
+        .viewer-container.is-pseudo-fs {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 99999 !important;
+            border-radius: 0 !important;
+            background-color: #000000 !important;
         }
 
         /* === RESPONSIVE MEDIA QUERIES (TABLET & MOBILE) === */
@@ -280,7 +290,6 @@
                 height: 100vh;
             }
 
-            /* Saat kelas open aktif di body */
             body.sidebar-open .sidebar {
                 left: 0;
             }
@@ -291,6 +300,7 @@
 
             .main-content {
                 padding: 16px;
+                height: 100vh;
             }
         }
     </style>
@@ -314,7 +324,7 @@
     <!-- MAIN INTERFACE -->
     <main class="main-content">
         
-        <!-- HEADER MOBILE (Hanya muncul di Layar Kecil) -->
+        <!-- HEADER MOBILE -->
         <header class="mobile-header">
             <button class="btn-toggle-menu" onclick="toggleMobileSidebar(true)" title="Buka Menu">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
@@ -355,7 +365,6 @@
             fsIcon: document.getElementById('fs-icon')
         };
 
-        // 1. Ambil Data dan Bangun Komponen Menu
         async function initApp() {
             try {
                 const response = await fetch('data-materi.json');
@@ -397,7 +406,6 @@
             }
         }
 
-        // 2. Logika Efek Lipat Accordion Menu
         function bindAccordionEvents() {
             const accordions = document.querySelectorAll(".accordion-btn");
             accordions.forEach(acc => {
@@ -416,21 +424,17 @@
             });
         }
 
-        // 3. Aksi klik muat slide
         function executeLoadSlide(url, element) {
             DOM.placeholder.style.display = 'none';
             DOM.viewer.src = url;
             DOM.fsBtn.style.display = 'flex';
             
-            // Tandai menu aktif
             document.querySelectorAll('.panel li').forEach(li => li.classList.remove('active-slide'));
             element.classList.add('active-slide');
 
-            // Jika di HP, tutup menu otomatis setelah klik materi
             toggleMobileSidebar(false);
         }
 
-        // 4. Pengendali Responsive Sidebar (Mobile)
         function toggleMobileSidebar(open) {
             if (open) {
                 document.body.classList.add('sidebar-open');
@@ -439,58 +443,70 @@
             }
         }
 
-        // 5. Advanced Fullscreen & Auto-Landscape Lock Logic
+        // === ADVANCED DUAL-MODE FULLSCREEN ENGINE ===
         async function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                try {
-                    if (DOM.fsContainer.requestFullscreen) {
-                        await DOM.fsContainer.requestFullscreen();
-                    } else if (DOM.fsContainer.webkitRequestFullscreen) {
-                        await DOM.fsContainer.webkitRequestFullscreen();
+            const container = DOM.fsContainer;
+            const isNativeFs = !!document.fullscreenElement;
+            const isPseudoFs = container.classList.contains('is-pseudo-fs');
+
+            if (!isNativeFs && !isPseudoFs) {
+                // Jalur 1: Coba sistem Fullscreen asli browser
+                if (container.requestFullscreen) {
+                    try {
+                        await container.requestFullscreen();
+                        return; 
+                    } catch (err) {
+                        console.warn("Native Fullscreen ditolak, beralih ke Pseudo Mode.");
                     }
-                } catch (err) {
-                    console.error("Fullscreen Request Denied:", err);
                 }
+                // Jalur 2: Sistem cadangan jika Jalur 1 gagal/tidak didukung (seperti iOS Safari)
+                enterPseudoFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
+                // Proses keluar layar penuh
+                if (isNativeFs) {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                } else {
+                    exitPseudoFullscreen();
                 }
             }
         }
 
-        // Event listener saat terjadi perubahan status Fullscreen (Termasuk jika user tekan tombol ESC)
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        function enterPseudoFullscreen() {
+            DOM.fsContainer.classList.add('is-pseudo-fs');
+            handleFullscreenEffects(true);
+        }
 
-        async function handleFullscreenChange() {
-            const isFullscreen = !!document.fullscreenElement;
-            
-            if (isFullscreen) {
-                // Ganti ikon ke ikon "Minimize"
+        function exitPseudoFullscreen() {
+            DOM.fsContainer.classList.remove('is-pseudo-fs');
+            handleFullscreenEffects(false);
+        }
+
+        // Pengendali efek rotasi & perubahan icon tombol
+        async function handleFullscreenEffects(active) {
+            if (active) {
                 DOM.fsIcon.innerHTML = `<path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>`;
                 
-                // OTOMATIS LANDSCAPE (Khusus Android/iOS/Chrome mobile)
+                // OTOMATIS LANDSCAPE (Khusus Android & Chrome Mobile)
                 if (screen.orientation && screen.orientation.lock) {
                     try {
                         await screen.orientation.lock('landscape');
                     } catch (e) {
-                        console.log("Orientation lock ditolak/tidak didukung di device ini.");
+                        console.log("Device meminta rotasi manual.");
                     }
                 }
             } else {
-                // Kembalikan ke ikon "Maximize"
                 DOM.fsIcon.innerHTML = `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>`;
                 
-                // UNLOCK ORIENTASI (Kembali normal mengikuti gravitasi HP)
                 if (screen.orientation && screen.orientation.unlock) {
                     screen.orientation.unlock();
                 }
             }
         }
 
-        // Jalankan Aplikasi
+        // Sinkronisasi dengan event tombol bawaan browser (ESC key)
+        document.addEventListener('fullscreenchange', () => handleFullscreenEffects(!!document.fullscreenElement));
+        document.addEventListener('webkitfullscreenchange', () => handleFullscreenEffects(!!document.fullscreenElement));
+
         initApp();
     </script>
 </body>
