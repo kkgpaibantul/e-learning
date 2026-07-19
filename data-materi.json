@@ -1,0 +1,8 @@
+[
+  {
+    "kelas": "Kelas 1",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-1/bab-1.html" }
+    ]
+  }
+]
