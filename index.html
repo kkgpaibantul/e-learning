@@ -8,21 +8,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* === VARIABEL WARNA & RESET === */
+        /* === VARIABLES & CONFIGURATION === */
+        :var-styling {
+            --sidebar-width: 280px;
+        }
         :root {
-            --sidebar-bg: #111827; 
-            --sidebar-hover: #1f2937;
+            --bg-sidebar: #111827; 
+            --bg-sidebar-hover: #1f2937;
+            --bg-panel: #0b0f19;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --accent-color: #10b981; /* Aksen hijau */
-            --bg-body: #f3f4f6;
+            --text-dark: #1f2937;
+            --accent: #10b981; /* Hijau Islami Modern */
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* === GLOBAL RESET === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -30,17 +39,19 @@
             height: 100vh;
             background-color: var(--bg-body);
             overflow: hidden;
+            position: relative;
         }
 
         /* === SIDEBAR STYLING === */
         .sidebar {
-            width: 280px;
-            background-color: var(--sidebar-bg);
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            z-index: 10;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            z-index: 100;
+            transition: var(--transition-smooth);
         }
 
         .sidebar-header {
@@ -49,14 +60,14 @@
         }
 
         .sidebar-header h2 {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 0.5px;
         }
 
         .sidebar-header p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             margin-top: 4px;
         }
@@ -67,9 +78,9 @@
             padding: 16px 0;
         }
 
-        /* Desain Tombol Accordion */
+        /* Accordion Trigger */
         .accordion-btn {
-            background-color: transparent;
+            background: transparent;
             color: var(--text-main);
             cursor: pointer;
             padding: 14px 24px;
@@ -79,31 +90,31 @@
             outline: none;
             font-size: 0.95rem;
             font-weight: 600;
-            transition: 0.3s;
+            transition: var(--transition-smooth);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .accordion-btn:hover, .accordion-btn.active {
-            background-color: var(--sidebar-hover);
-            border-left: 4px solid var(--accent-color);
+            background-color: var(--bg-sidebar-hover);
+            border-left: 4px solid var(--accent);
             padding-left: 20px;
         }
 
         .accordion-btn::after {
             content: '\276F'; 
-            font-size: 0.8rem;
-            transition: transform 0.3s ease;
+            font-size: 0.75rem;
+            transition: var(--transition-smooth);
         }
         
         .accordion-btn.active::after {
             transform: rotate(90deg);
         }
 
-        /* Panel Sub-menu */
+        /* Sub-menu Panel */
         .panel {
-            background-color: #0b0f19;
+            background-color: var(--bg-panel);
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
@@ -111,7 +122,7 @@
 
         .panel ul {
             list-style: none;
-            padding: 8px 0;
+            padding: 6px 0;
         }
 
         .panel li {
@@ -119,41 +130,68 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             cursor: pointer;
-            transition: 0.2s;
+            transition: var(--transition-smooth);
         }
 
         .panel li:hover {
             color: #ffffff;
-            background-color: rgba(255,255,255,0.05);
+            background-color: rgba(255,255,255,0.03);
         }
 
         .panel li.active-slide {
-            color: var(--accent-color);
-            font-weight: 600;
+            color: var(--accent);
+            font-weight: 700;
+            background-color: rgba(16, 185, 129, 0.05);
+            border-right: 3px solid var(--accent);
         }
 
-        /* === MAIN CONTENT (VIEWER AREA) === */
+        /* === MAIN WORKSPACE === */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 24px;
+            height: 100%;
+            position: relative;
+            transition: var(--transition-smooth);
         }
 
+        /* Top Bar khusus Mobile */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            padding: 0 0 16px 0;
+            gap: 12px;
+        }
+
+        .btn-toggle-menu {
+            background: var(--bg-card);
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            color: var(--text-dark);
+        }
+
+        .mobile-title h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Stage Container */
         .viewer-container {
             flex: 1;
-            background-color: #ffffff;
+            background-color: var(--bg-card);
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             overflow: hidden;
-            position: relative; /* Penting untuk tombol absolut */
-        }
-
-        /* Penyesuaian saat masuk mode fullscreen */
-        .viewer-container:fullscreen {
-            border-radius: 0;
-            padding: 0;
-            background-color: #000000;
+            position: relative;
         }
 
         .viewer-container iframe {
@@ -170,89 +208,161 @@
             transform: translate(-50%, -50%);
             color: #9ca3af;
             text-align: center;
-            pointer-events: none;
+            z-index: 1;
         }
 
         #status-pesan {
             padding: 20px;
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.9rem;
         }
 
-        /* === TOMBOL FULLSCREEN MELAYANG === */
+        /* Floating Action Buttons */
         .btn-fullscreen {
             position: absolute;
             bottom: 24px;
             right: 24px;
-            width: 48px;
-            height: 48px;
-            background-color: var(--accent-color);
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent);
             color: white;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-            display: none; /* Disembunyikan awalnya */
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            display: none; 
             justify-content: center;
             align-items: center;
-            z-index: 50;
-            transition: all 0.3s ease;
+            z-index: 90;
+            transition: var(--transition-smooth);
         }
 
         .btn-fullscreen:hover {
-            transform: scale(1.1);
-            background-color: #059669;
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Mobile Backdrop Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 99;
+        }
+
+        /* === FULLSCREEN OVERRIDES === */
+        .viewer-container:fullscreen {
+            border-radius: 0;
+        }
+        .viewer-container:fullscreen .btn-fullscreen {
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(31, 41, 55, 0.7); /* Lebih transparan saat fullscreen */
+            backdrop-filter: blur(4px);
+        }
+
+        /* === RESPONSIVE MEDIA QUERIES (TABLET & MOBILE) === */
+        @media (max-width: 992px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: calc(-1 * var(--sidebar-width));
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+            }
+
+            /* Saat kelas open aktif di body */
+            body.sidebar-open .sidebar {
+                left: 0;
+            }
+
+            body.sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- BACKDROP MOBILE -->
+    <div class="sidebar-overlay" onclick="toggleMobileSidebar(false)"></div>
+
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>KKG PAI Kab. Bantul</h2>
-            <p>E-Learning PAI CP 020 Tahun 2026</p>
+            <p>CP 020 • Tahun 2026</p>
         </div>
-        
         <div class="sidebar-menu" id="tempat-menu-sidebar">
             <div id="status-pesan">Memuat daftar materi...</div>
         </div>
     </aside>
 
-    <!-- VIEWER MATERI -->
+    <!-- MAIN INTERFACE -->
     <main class="main-content">
-        <!-- Tambahkan ID ke container agar bisa di-fullscreen-kan -->
+        
+        <!-- HEADER MOBILE (Hanya muncul di Layar Kecil) -->
+        <header class="mobile-header">
+            <button class="btn-toggle-menu" onclick="toggleMobileSidebar(true)" title="Buka Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <div class="mobile-title">
+                <h1>E-Learning PAI</h1>
+            </div>
+        </header>
+
+        <!-- VIEWER SCREEN -->
         <div class="viewer-container" id="viewer-container">
             
             <div class="placeholder-text" id="placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 <h3>Pilih materi di menu samping</h3>
-                <p>Slide akan muncul di sini</p>
+                <p style="font-size: 0.85rem; margin-top: 4px;">Presentasi interaktif siap dimulai</p>
             </div>
             
-            <!-- Tambahkan allowfullscreen pada iframe -->
             <iframe id="slide-viewer" src="" allowfullscreen></iframe>
 
-            <!-- Tombol Fullscreen melayang (Ikon dari Lucide/Feather) -->
+            <!-- Floating Fullscreen Button -->
             <button id="btn-fullscreen" class="btn-fullscreen" title="Layar Penuh" onclick="toggleFullscreen()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="fs-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
                 </svg>
             </button>
         </div>
     </main>
 
-    <!-- SCRIPT LOGIKA -->
+    <!-- APPLICATION LOGIC -->
     <script>
-        async function bangunSidebar() {
-            const menuContainer = document.getElementById('tempat-menu-sidebar');
-            
+        const DOM = {
+            menuContainer: document.getElementById('tempat-menu-sidebar'),
+            placeholder: document.getElementById('placeholder'),
+            viewer: document.getElementById('slide-viewer'),
+            fsBtn: document.getElementById('btn-fullscreen'),
+            fsContainer: document.getElementById('viewer-container'),
+            fsIcon: document.getElementById('fs-icon')
+        };
+
+        // 1. Ambil Data dan Bangun Komponen Menu
+        async function initApp() {
             try {
                 const response = await fetch('data-materi.json');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
                 
                 const data = await response.json();
-                menuContainer.innerHTML = ''; 
+                DOM.menuContainer.innerHTML = ''; 
 
                 data.forEach(itemKelas => {
                     const btn = document.createElement('button');
@@ -268,27 +378,27 @@
                         li.textContent = itemBab.judul;
                         
                         li.onclick = function() {
-                            loadSlide(itemBab.file);
-                            tandaiAktif(this);
+                            executeLoadSlide(itemBab.file, this);
                         }; 
                         
                         ul.appendChild(li);
                     });
 
                     panel.appendChild(ul);
-                    menuContainer.appendChild(btn);
-                    menuContainer.appendChild(panel);
+                    DOM.menuContainer.appendChild(btn);
+                    DOM.menuContainer.appendChild(panel);
                 });
 
-                aktifkanAccordion();
+                bindAccordionEvents();
 
             } catch (error) {
-                console.error("Gagal memuat data materi:", error);
-                menuContainer.innerHTML = `<div id="status-pesan">Gagal memuat daftar materi.<br>Pastikan file data-materi.json tersedia.</div>`;
+                console.error("Initialization failed:", error);
+                DOM.menuContainer.innerHTML = `<div id="status-pesan">Gagal memuat materi.<br>Periksa kembali file data-materi.json.</div>`;
             }
         }
 
-        function aktifkanAccordion() {
+        // 2. Logika Efek Lipat Accordion Menu
+        function bindAccordionEvents() {
             const accordions = document.querySelectorAll(".accordion-btn");
             accordions.forEach(acc => {
                 acc.addEventListener("click", function() {
@@ -301,55 +411,87 @@
 
                     this.classList.toggle("active");
                     const panel = this.nextElementSibling;
-                    if (panel.style.maxHeight) {
-                        panel.style.maxHeight = null;
-                    } else {
-                        panel.style.maxHeight = panel.scrollHeight + "px";
-                    }
+                    panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + "px";
                 });
             });
         }
 
-        function loadSlide(url) {
-            document.getElementById('placeholder').style.display = 'none';
-            document.getElementById('slide-viewer').src = url;
+        // 3. Aksi klik muat slide
+        function executeLoadSlide(url, element) {
+            DOM.placeholder.style.display = 'none';
+            DOM.viewer.src = url;
+            DOM.fsBtn.style.display = 'flex';
             
-            // Munculkan tombol fullscreen setelah slide dipilih
-            document.getElementById('btn-fullscreen').style.display = 'flex';
+            // Tandai menu aktif
+            document.querySelectorAll('.panel li').forEach(li => li.classList.remove('active-slide'));
+            element.classList.add('active-slide');
+
+            // Jika di HP, tutup menu otomatis setelah klik materi
+            toggleMobileSidebar(false);
         }
 
-        function tandaiAktif(elemenList) {
-            const semuaLi = document.querySelectorAll('.panel li');
-            semuaLi.forEach(li => li.classList.remove('active-slide'));
-            elemenList.classList.add('active-slide');
+        // 4. Pengendali Responsive Sidebar (Mobile)
+        function toggleMobileSidebar(open) {
+            if (open) {
+                document.body.classList.add('sidebar-open');
+            } else {
+                document.body.classList.remove('sidebar-open');
+            }
         }
 
-        // === FUNGSI FULLSCREEN ===
-        const viewerContainer = document.getElementById('viewer-container');
-
-        function toggleFullscreen() {
+        // 5. Advanced Fullscreen & Auto-Landscape Lock Logic
+        async function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                // Masuk Fullscreen
-                if (viewerContainer.requestFullscreen) {
-                    viewerContainer.requestFullscreen();
-                } else if (viewerContainer.webkitRequestFullscreen) { /* Safari */
-                    viewerContainer.webkitRequestFullscreen();
-                } else if (viewerContainer.msRequestFullscreen) { /* IE11 */
-                    viewerContainer.msRequestFullscreen();
+                try {
+                    if (DOM.fsContainer.requestFullscreen) {
+                        await DOM.fsContainer.requestFullscreen();
+                    } else if (DOM.fsContainer.webkitRequestFullscreen) {
+                        await DOM.fsContainer.webkitRequestFullscreen();
+                    }
+                } catch (err) {
+                    console.error("Fullscreen Request Denied:", err);
                 }
             } else {
-                // Keluar Fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) { /* Safari */
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { /* IE11 */
-                    document.msExitFullscreen();
                 }
             }
         }
 
-        bangunSidebar();
+        // Event listener saat terjadi perubahan status Fullscreen (Termasuk jika user tekan tombol ESC)
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+        async function handleFullscreenChange() {
+            const isFullscreen = !!document.fullscreenElement;
+            
+            if (isFullscreen) {
+                // Ganti ikon ke ikon "Minimize"
+                DOM.fsIcon.innerHTML = `<path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>`;
+                
+                // OTOMATIS LANDSCAPE (Khusus Android/iOS/Chrome mobile)
+                if (screen.orientation && screen.orientation.lock) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (e) {
+                        console.log("Orientation lock ditolak/tidak didukung di device ini.");
+                    }
+                }
+            } else {
+                // Kembalikan ke ikon "Maximize"
+                DOM.fsIcon.innerHTML = `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>`;
+                
+                // UNLOCK ORIENTASI (Kembali normal mengikuti gravitasi HP)
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            }
+        }
+
+        // Jalankan Aplikasi
+        initApp();
     </script>
 </body>
 </html>
