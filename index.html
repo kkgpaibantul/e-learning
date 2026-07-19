@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Learning PAI SD</title>
+    <title>E-Learning PAI SD - KKG Bantul</title>
     <!-- Font modern -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     
@@ -14,7 +14,7 @@
             --sidebar-hover: #1f2937;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --accent-color: #10b981; /* Aksen hijau untuk tema Islami */
+            --accent-color: #10b981; /* Aksen hijau */
             --bg-body: #f3f4f6;
         }
 
@@ -61,7 +61,6 @@
             margin-top: 4px;
         }
 
-        /* Container untuk menu yang di-generate JSON */
         .sidebar-menu {
             flex: 1;
             overflow-y: auto;
@@ -93,7 +92,7 @@
         }
 
         .accordion-btn::after {
-            content: '\276F'; /* Ikon panah */
+            content: '\276F'; 
             font-size: 0.8rem;
             transition: transform 0.3s ease;
         }
@@ -102,7 +101,7 @@
             transform: rotate(90deg);
         }
 
-        /* Panel Sub-menu (Isi Bab) */
+        /* Panel Sub-menu */
         .panel {
             background-color: #0b0f19;
             max-height: 0;
@@ -128,7 +127,6 @@
             background-color: rgba(255,255,255,0.05);
         }
 
-        /* Menandai materi yang sedang aktif di sidebar */
         .panel li.active-slide {
             color: var(--accent-color);
             font-weight: 600;
@@ -148,7 +146,14 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             overflow: hidden;
-            position: relative;
+            position: relative; /* Penting untuk tombol absolut */
+        }
+
+        /* Penyesuaian saat masuk mode fullscreen */
+        .viewer-container:fullscreen {
+            border-radius: 0;
+            padding: 0;
+            background-color: #000000;
         }
 
         .viewer-container iframe {
@@ -168,12 +173,36 @@
             pointer-events: none;
         }
 
-        /* Pesan loading atau error untuk JSON */
         #status-pesan {
             padding: 20px;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.9rem;
+        }
+
+        /* === TOMBOL FULLSCREEN MELAYANG === */
+        .btn-fullscreen {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            display: none; /* Disembunyikan awalnya */
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .btn-fullscreen:hover {
+            transform: scale(1.1);
+            background-color: #059669;
         }
     </style>
 </head>
@@ -182,11 +211,10 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>KKG PAI Kabupaten Bantul</h2>
+            <h2>KKG PAI Kab. Bantul</h2>
             <p>E-Learning PAI CP 020 Tahun 2026</p>
         </div>
         
-        <!-- Di sinilah JavaScript akan menyuntikkan tombol-tombol kelas dan bab -->
         <div class="sidebar-menu" id="tempat-menu-sidebar">
             <div id="status-pesan">Memuat daftar materi...</div>
         </div>
@@ -194,69 +222,64 @@
 
     <!-- VIEWER MATERI -->
     <main class="main-content">
-        <div class="viewer-container">
+        <!-- Tambahkan ID ke container agar bisa di-fullscreen-kan -->
+        <div class="viewer-container" id="viewer-container">
+            
             <div class="placeholder-text" id="placeholder">
                 <h3>Pilih materi di menu samping</h3>
                 <p>Slide akan muncul di sini</p>
             </div>
-            <!-- Iframe untuk menampilkan slide -->
-            <iframe id="slide-viewer" src=""></iframe>
+            
+            <!-- Tambahkan allowfullscreen pada iframe -->
+            <iframe id="slide-viewer" src="" allowfullscreen></iframe>
+
+            <!-- Tombol Fullscreen melayang (Ikon dari Lucide/Feather) -->
+            <button id="btn-fullscreen" class="btn-fullscreen" title="Layar Penuh" onclick="toggleFullscreen()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
         </div>
     </main>
 
     <!-- SCRIPT LOGIKA -->
     <script>
-        // 1. Fungsi Utama: Mengambil dan Merakit Sidebar dari JSON
         async function bangunSidebar() {
             const menuContainer = document.getElementById('tempat-menu-sidebar');
             
             try {
-                // Fetch mengambil file JSON
                 const response = await fetch('data-materi.json');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
-                
-                // Kosongkan pesan loading
                 menuContainer.innerHTML = ''; 
 
-                // Looping data kelas
                 data.forEach(itemKelas => {
-                    // Buat tombol Accordion untuk Kelas
                     const btn = document.createElement('button');
                     btn.className = 'accordion-btn';
                     btn.textContent = itemKelas.kelas;
                     
-                    // Buat panel untuk menampung Bab
                     const panel = document.createElement('div');
                     panel.className = 'panel';
                     const ul = document.createElement('ul');
 
-                    // Looping data Bab di dalam kelas tersebut
                     itemKelas.bab.forEach(itemBab => {
                         const li = document.createElement('li');
                         li.textContent = itemBab.judul;
                         
-                        // Event saat Bab diklik
                         li.onclick = function() {
                             loadSlide(itemBab.file);
-                            tandaiAktif(this); // Beri warna pada menu yang diklik
+                            tandaiAktif(this);
                         }; 
                         
                         ul.appendChild(li);
                     });
 
                     panel.appendChild(ul);
-                    
-                    // Suntikkan ke HTML
                     menuContainer.appendChild(btn);
                     menuContainer.appendChild(panel);
                 });
 
-                // Pasang logika klik untuk menu accordion yang baru dibuat
                 aktifkanAccordion();
 
             } catch (error) {
@@ -265,13 +288,10 @@
             }
         }
 
-        // 2. Fungsi Logika Accordion (Buka/Tutup Menu)
         function aktifkanAccordion() {
             const accordions = document.querySelectorAll(".accordion-btn");
-
             accordions.forEach(acc => {
                 acc.addEventListener("click", function() {
-                    // Tutup menu lain yang sedang terbuka
                     accordions.forEach(other => {
                         if (other !== this && other.classList.contains("active")) {
                             other.classList.remove("active");
@@ -279,7 +299,6 @@
                         }
                     });
 
-                    // Toggle menu yang diklik
                     this.classList.toggle("active");
                     const panel = this.nextElementSibling;
                     if (panel.style.maxHeight) {
@@ -291,23 +310,45 @@
             });
         }
 
-        // 3. Fungsi Load Slide ke dalam Iframe
         function loadSlide(url) {
             document.getElementById('placeholder').style.display = 'none';
             document.getElementById('slide-viewer').src = url;
+            
+            // Munculkan tombol fullscreen setelah slide dipilih
+            document.getElementById('btn-fullscreen').style.display = 'flex';
         }
 
-        // 4. Fungsi Visual: Menandai Bab yang sedang dibaca
         function tandaiAktif(elemenList) {
-            // Hapus class active dari semua li
             const semuaLi = document.querySelectorAll('.panel li');
             semuaLi.forEach(li => li.classList.remove('active-slide'));
-            
-            // Tambahkan class active ke li yang diklik
             elemenList.classList.add('active-slide');
         }
 
-        // JALANKAN SCRIPT SAAT HALAMAN DIBUKA
+        // === FUNGSI FULLSCREEN ===
+        const viewerContainer = document.getElementById('viewer-container');
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                // Masuk Fullscreen
+                if (viewerContainer.requestFullscreen) {
+                    viewerContainer.requestFullscreen();
+                } else if (viewerContainer.webkitRequestFullscreen) { /* Safari */
+                    viewerContainer.webkitRequestFullscreen();
+                } else if (viewerContainer.msRequestFullscreen) { /* IE11 */
+                    viewerContainer.msRequestFullscreen();
+                }
+            } else {
+                // Keluar Fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
         bangunSidebar();
     </script>
 </body>
