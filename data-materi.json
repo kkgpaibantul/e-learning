@@ -6,3 +6,48 @@
     ]
   }
 ]
+
+[
+  {
+    "kelas": "Kelas 2",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-2/bab-1.html" }
+    ]
+  }
+]
+
+[
+  {
+    "kelas": "Kelas 3",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-3/bab-1.html" }
+    ]
+  }
+]
+
+[
+  {
+    "kelas": "Kelas 4",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-4/bab-1.html" }
+    ]
+  }
+]
+
+[
+  {
+    "kelas": "Kelas 5",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-5/bab-1.html" }
+    ]
+  }
+]
+
+[
+  {
+    "kelas": "Kelas 6",
+    "bab": [
+      { "judul": "Bab 1: Kasih Sayang", "file": "materi/kelas-6/bab-1.html" }
+    ]
+  }
+]
